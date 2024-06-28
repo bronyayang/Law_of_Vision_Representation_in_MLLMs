@@ -1,0 +1,10 @@
+NOTE: 'your_experiment_name'
+DO_EVAL: true
+DUMMY_NET: true
+ADAPT_FLIP: false
+SOFT_EVAL: true
+TEST_SAMPLE: 0
+COMPUTE_GEOAWARE_METRICS: true
+SOFT_EVAL_WINDOW: 5
+NUM_PATCHES: 16
+MODEL: 'dino'

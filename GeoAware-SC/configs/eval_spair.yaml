@@ -1,0 +1,6 @@
+NOTE: 'your_experiment_name'
+DO_EVAL: true
+LOAD: "results_spair/best_856.PTH" # Path to the model checkpoint
+SOFT_EVAL: true
+TEST_SAMPLE: 0
+COMPUTE_GEOAWARE_METRICS: true

@@ -1,0 +1,355 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "torchrun",
+            "type": "python",
+            "request": "launch",
+            "module": "torch.distributed.run",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "--rdzv-endpoint", "localhost:22222",
+                "--nnodes", "1",
+                "--nproc_per_node", "2",
+                "tasks/finetune/cruise_ift.py",
+                "--config",
+                "configs/mlm_multi_source_ift_13B.yaml",
+                "--trainer",
+                "configs/trainers/mlm_ift_ds_zero2.yaml",
+                "--trainer.experiment_name",
+                "ift_llava_res224_vicuna13b_8node",
+                "--trainer.default_hdfs_dir",
+                "hdfs://harunava/home/byte_data_aml_research/user/haogeng.liu/mlm-ckpt/ift_llava_unfrozen_llm_res224_vicuna13b",
+                "--model.vision_encoder_name",
+                "EVA02_CLIP_bigE-14",
+                "--model.cross_attn_every_n_layers", "4",
+                "--trainer.project_name", "mlm_tool_run_ift",
+                "--trainer.log_every_n_steps", "100",
+                "--data.train_batch_size", "2",
+                "--data.val_batch_size", "2",
+                "--model.region", "VA",
+                "--data.region", "VA",
+                "--model.pretrain_ckpt", 
+                "hdfs://harunava/home/byte_data_aml_research/user/quanzeng.you/mlm-tool/vit_E_vicuna_13B_mmc4_obelisc_bs8_384_all5data_bs80_const_lr1e4_v2/checkpoints/mp_rank_00_model_states.pt",
+                "--model.sep_token", "<sep>",
+                "--data.extra_tokens", "<sep>",
+                "--trainer.resume_ckpt_path", 
+                "hdfs://harunava/home/byte_data_aml_research/user/bohan.zhai/debug/"
+            ],
+            "env": {
+                "MASTER_PORT":"22222"
+            }
+        },
+        {
+            "name": "inference_llava",
+            "type": "python",
+            "request": "launch",
+            "program": "llava/eval/run_llava.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--model-path",
+                "/mnt/bn/bohanzhainas1/shijiay/exp_ckpts/02-28-24_LLaVA_clipdiff_mof_ft",
+                "--image-file",
+                "/opt/tiger/LLaVA1.5/llava/eval/scat/black_cat.jpg",
+                "--query",
+                "Describe this image."
+            ]
+
+        },
+        {
+            "name": "llava",
+            "type": "python",
+            "request": "launch",
+            "module": "torch.distributed.run",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--rdzv-endpoint", "localhost:22222",
+                "--nnodes", "1",
+                "--nproc_per_node", "2",
+                "llava/train/train_mem.py",
+                "--deepspeed", "/opt/tiger/LLaVA1.5/scripts/zero2.json",
+                "--model_name_or_path", "/mnt/bn/bohanzhainas1/Public_Models/vicuna-13b-v1.5",
+                "--version", "plain",
+                "--data_path", "/mnt/bn/bohanzhainas1/Public_data/blip_laion_cc_sbu_558k/blip_laion_cc_sbu_558k.json",
+                "--image_folder", "/mnt/bn/shijiaynas/LLaVA_pretrain_sd1.5",
+                "--vision_tower", "runwayml/stable-diffusion-v1-5_feature",
+                "--mm_projector_type", "mlp2x_gelu",
+                "--tune_mm_mlp_adapter", "True",
+                "--mm_vision_select_layer", "-2",
+                "--mm_use_im_start_end", "False",
+                "--mm_use_im_patch_token", "False",
+                "--bf16", "True",
+                "--output_dir", "/mnt/bn/bohanzhainas1/shijiay/exp_ckpts/debug",
+                "--num_train_epochs", "1",
+                "--per_device_train_batch_size", "32",
+                "--per_device_eval_batch_size", "4",
+                "--gradient_accumulation_steps", "1",
+                "--evaluation_strategy", "no",
+                "--save_strategy", "steps",
+                "--save_steps", "1",
+                "--save_total_limit", "1",
+                "--learning_rate", "1e-3",
+                "--weight_decay", "0.",
+                "--warmup_ratio", "0.03",
+                "--lr_scheduler_type", "cosine",
+                "--logging_steps", "1",
+                "--tf32", "True",
+                "--model_max_length", "2048",
+                "--gradient_checkpointing", "True",
+                "--dataloader_num_workers", "4",
+                "--lazy_preprocess", "True"
+            ],
+            "env": {
+                "MASTER_PORT":"22222"
+            }
+        },
+        {
+            "name": "extract",
+            "type": "python",
+            "request": "launch",
+            "module": "torch.distributed.run",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--rdzv-endpoint", "localhost:22222",
+                "--nnodes", "1",
+                "--nproc_per_node", "2",
+                "llava/feature/extract.py",
+                "--deepspeed", "/opt/tiger/LLaVA1.5/scripts/zero2.json",
+                "--model_name_or_path", "/mnt/bn/bohanzhainas1/Public_Models/vicuna-13b-v1.5",
+                "--version", "plain",
+                "--data_path", "/mnt/bn/bohanzhainas1/Public_data/blip_laion_cc_sbu_558k/blip_laion_cc_sbu_558k.json",
+                "--image_folder", "/mnt/bn/bohanzhainas1/Public_data/llava_1.3_data/LLaVA-Pretrain/",
+                "--vision_tower", "runwayml/stable-diffusion-v1-5",
+                "--mm_projector_type", "mlp2x_gelu",
+                "--tune_mm_mlp_adapter", "True",
+                "--mm_vision_select_layer", "-2",
+                "--mm_use_im_start_end", "False",
+                "--mm_use_im_patch_token", "False",
+                "--bf16", "True",
+                "--output_dir", "/mnt/bn/bohanzhainas1/shijiay/exp_ckpts/03-19-24_XLdiffLLaVA",
+                "--num_train_epochs", "1",
+                "--per_device_train_batch_size", "32",
+                "--per_device_eval_batch_size", "4",
+                "--gradient_accumulation_steps", "1",
+                "--evaluation_strategy", "no",
+                "--save_strategy", "steps",
+                "--save_steps", "1",
+                "--save_total_limit", "1",
+                "--learning_rate", "1e-3",
+                "--weight_decay", "0.",
+                "--warmup_ratio", "0.03",
+                "--lr_scheduler_type", "cosine",
+                "--logging_steps", "1",
+                "--tf32", "True",
+                "--model_max_length", "2048",
+                "--gradient_checkpointing", "True",
+                "--dataloader_num_workers", "4",
+                "--lazy_preprocess", "True",
+                "--img_size", "1024"
+            ],
+            "env": {
+                "MASTER_PORT":"22222"
+            }
+        },
+        {
+            "name": "torchrun-debug",
+            "type": "python",
+            "request": "launch",
+            "module": "torch.distributed.run",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "--rdzv-endpoint", "localhost:22222",
+                "--nnodes", "1",
+                "--nproc_per_node", "2",
+                "tasks/pretraining/cruise_train_eva.py",
+                "--config", "configs/mlm_multi_source_v2_va_compose_datasource.yaml",
+                "--trainer", "configs/trainers/mlm_ds_zero2.yaml",
+            ],
+            "env": {
+                "MASTER_PORT":"22222"
+            }
+        },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "open_flamingo/train/cruise_train.py",
+            "console": "integratedTerminal",
+            "python": "TORCHRUN",
+            "justMyCode": false,
+            "args": [
+                "--config", "configs/mlm_debug.yaml",
+                "--trainer", "configs/trainers/mlm_debug_ddp.yaml"
+            ]
+        },
+        {
+            "name": "Python: Remote Connection",
+            "type": "python",
+            "request": "attach",
+            "listen": {
+                "host": "0.0.0.0",
+                "port": 5678 
+            },
+            "logToFile": true,
+            "preLaunchTask": "Launch",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "."
+                }
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Remote Connection IPv6",
+            "type": "python",
+            "request": "attach",
+            "listen": {
+                "host": "0.0.0.0",
+                "port": 5678 
+            },
+            "logToFile": true,
+            "preLaunchTask": "Launch_ipv6",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "."
+                }
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Remote Connection IPv6 fsdp",
+            "type": "python",
+            "request": "attach",
+            "listen": {
+                "host": "0.0.0.0",
+                "port": 5678 
+            },
+            "logToFile": true,
+            "preLaunchTask": "Launch_ipv6_fsdp",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "."
+                }
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "offline-eval-debug",
+            "type": "python",
+            "request": "launch",
+            "module": "torch.distributed.run",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "--rdzv-endpoint", "localhost:22222",
+                "--nnodes", "1",
+                "--nproc_per_node", "2",
+                "open_flamingo/eval/evaluate.py",
+                "--model", "cruise_model",
+                "--precision", "bf16",
+                "--config_yaml", "configs/mlm_multi_source_v1_va_compose_datasource.yaml",
+                "--checkpoint_path", "cruise_logs/checkpoints/global_step_330000/mp_rank_00_model_states.pt",
+                "--results_file", "results.json",
+                "--batch_size", "16",
+                "--eval_ok_vqa",
+                "--ok_vqa_train_image_dir_path", "data/evaluation/mscoco_karpathy/images/train2014",
+                "--ok_vqa_train_annotations_json_path", "data/evaluation/okvqa/mscoco_train2014_annotations.json",
+                "--ok_vqa_train_questions_json_path", "data/evaluation/okvqa/OpenEnded_mscoco_train2014_questions.json",
+                "--ok_vqa_test_image_dir_path", "data/evaluation/mscoco_karpathy/images/val2014",
+                "--ok_vqa_test_annotations_json_path", "data/evaluation/okvqa/mscoco_val2014_annotations.json",
+                "--ok_vqa_test_questions_json_path", "data/evaluation/okvqa/OpenEnded_mscoco_val2014_questions.json",
+            ],
+            "env": {
+                "MASTER_PORT":"22222"
+            }
+        },
+        {
+            "name": "torchrun-null-model-debug",
+            "type": "python",
+            "request": "launch",
+            "module": "torch.distributed.run",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "--rdzv-endpoint", "localhost:22222",
+                "--nnodes", "1",
+                "--nproc_per_node", "2",
+                "tests/data/test_dataloader_null_model.py",
+                // "--config", "configs/mlm_multi_source_v1_va_new_data.yaml",
+                // "--config", "configs/13b_training_official/mlm_multi_source_v2_cn_compose_llama13B_ViTbigE.yaml",
+                "--config", "configs/mlm_multi_source_v1_va_compose_datasource.yaml",
+                "--trainer", "configs/trainers/mlm_ds_zero2.yaml",
+                "--model.region", "VA",
+                "--data.region", "VA",
+                "--trainer.val_check_interval", "[-1,1.0]"
+            ],
+            "env": {
+                "MASTER_PORT":"22222"
+            }
+        },
+        {
+            "name": "torchrun-model-pretrain-debug",
+            "type": "python",
+            "request": "launch",
+            "module": "torch.distributed.run",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "--rdzv-endpoint", "localhost:22222",
+                "--nnodes", "1",
+                "--nproc_per_node", "2",
+                "tasks/pretraining/cruise_pretrain_entry.py",
+                // "--config", "configs/mlm_multi_source_v1_va_compose_datasource.yaml",
+                "--config", "configs/mlm_llama7b_vitG_pretrain_with_QA.yaml",
+                "--trainer", "configs/trainers/mlm_ds_zero2_cosine.yaml",
+            ],
+            "env": {
+                "MASTER_PORT":"22222",
+                "ARNOLD_REGION": "US",
+            }
+        },
+        {
+            "name": "gradio-frontend",
+            "type": "python",
+            "request": "launch",
+            "program": "tasks/playground/gradio_demo.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": []
+        },
+        {
+            "name": "torchrun-debug-peft",
+            "type": "python",
+            "request": "launch",
+            "module": "torch.distributed.run",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "--rdzv-endpoint", "localhost:22222",
+                "--nnodes", "1",
+                "--nproc_per_node", "2",
+                // "tasks/pretraining/cruise_pretrain_entry.py",
+                "tasks/finetune/cruise_ift.py",
+                // "--config", "configs/mlm_multi_source_v1_compose_datasource.yaml",
+                // "--trainer", "configs/trainers/mlm_ds_zero2_const.yaml",
+                "--config", "configs/mlm_multi_source_ift_13B_lora.yaml",
+                "--trainer", "configs/trainers/mlm_ift_ds_zero2.yaml",
+            ],
+            "env": {
+                "MASTER_PORT":"22222",
+                "ARNOLD_REGION": "US",
+            }
+        },
+    ]
+}
