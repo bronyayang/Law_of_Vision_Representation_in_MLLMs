@@ -1,0 +1,148 @@
+Benchmark,Train Models,Performance
+seed_image,"('CLIP336', 'CLIP224')",Optimal
+scienceqa_img,"('CLIP224', 'OpenCLIP')",Optimal
+mme,"('CLIP224', 'DINOv2')",Optimal
+vizwiz_vqa_val,"('CLIP224', 'DINOv2')",Optimal
+scienceqa_img,"('CLIP224', 'DINOv2')",Optimal
+mme,"('CLIP224', 'SDim')",Optimal
+vizwiz_vqa_val,"('CLIP224', 'SDim')",Optimal
+scienceqa_img,"('CLIP224', 'SDim')",Optimal
+mme,"('CLIP224', 'SD1.5')",Optimal
+vizwiz_vqa_val,"('CLIP224', 'SD1.5')",Optimal
+scienceqa_img,"('CLIP224', 'SD1.5')",Optimal
+mme,"('CLIP224', 'SDXL')",Optimal
+vizwiz_vqa_val,"('CLIP224', 'SDXL')",Optimal
+scienceqa_img,"('CLIP224', 'SDXL')",Optimal
+mme,"('CLIP224', 'DiT')",Optimal
+vizwiz_vqa_val,"('CLIP224', 'DiT')",Optimal
+scienceqa_img,"('CLIP224', 'DiT')",Optimal
+mme,"('CLIP224', 'SD3')",Optimal
+vizwiz_vqa_val,"('CLIP224', 'SD3')",Optimal
+scienceqa_img,"('CLIP224', 'SD3')",Optimal
+mme,"('CLIP224', 'SD2.1')",Optimal
+vizwiz_vqa_val,"('CLIP224', 'SD2.1')",Optimal
+scienceqa_img,"('CLIP224', 'SD2.1')",Optimal
+mme,"('CLIP224', 'SigLIP')",Optimal
+scienceqa_img,"('CLIP224', 'SigLIP')",Optimal
+mme,"('CLIP224', 'CLIP224+DINOv2')",Optimal
+scienceqa_img,"('CLIP224', 'CLIP336+DINOv2')",Optimal
+ok_vqa,"('OpenCLIP', 'DiT')",Optimal
+textvqa_val,"('OpenCLIP', 'DiT')",Optimal
+seed_image,"('OpenCLIP', 'DiT')",Optimal
+ok_vqa,"('OpenCLIP', 'SD3')",Optimal
+textvqa_val,"('OpenCLIP', 'SD3')",Optimal
+seed_image,"('OpenCLIP', 'SD3')",Optimal
+mme,"('OpenCLIP', 'SD2.1')",Optimal
+vizwiz_vqa_val,"('OpenCLIP', 'SD2.1')",Optimal
+scienceqa_img,"('OpenCLIP', 'SD2.1')",Optimal
+ok_vqa,"('OpenCLIP', 'SigLIP')",Optimal
+textvqa_val,"('OpenCLIP', 'SigLIP')",Optimal
+seed_image,"('OpenCLIP', 'SigLIP')",Optimal
+seed_image,"('OpenCLIP', 'CLIP224+DINOv2')",Optimal
+textvqa_val,"('DINOv2', 'SDim')",Optimal
+mme,"('DINOv2', 'SD1.5')",Optimal
+scienceqa_img,"('DINOv2', 'SD1.5')",Optimal
+ok_vqa,"('DINOv2', 'SDXL')",Optimal
+textvqa_val,"('DINOv2', 'SDXL')",Optimal
+seed_image,"('DINOv2', 'SDXL')",Optimal
+ok_vqa,"('DINOv2', 'DiT')",Optimal
+textvqa_val,"('DINOv2', 'DiT')",Optimal
+seed_image,"('DINOv2', 'DiT')",Optimal
+ok_vqa,"('DINOv2', 'SD3')",Optimal
+textvqa_val,"('DINOv2', 'SD3')",Optimal
+seed_image,"('DINOv2', 'SD3')",Optimal
+ok_vqa,"('DINOv2', 'SD2.1')",Optimal
+textvqa_val,"('DINOv2', 'SD2.1')",Optimal
+seed_image,"('DINOv2', 'SD2.1')",Optimal
+ok_vqa,"('DINOv2', 'SigLIP')",Optimal
+mme,"('DINOv2', 'CLIP336+DINOv2')",Optimal
+vizwiz_vqa_val,"('DINOv2', 'CLIP336+DINOv2')",Optimal
+ok_vqa,"('SDim', 'SDXL')",Optimal
+textvqa_val,"('SDim', 'SDXL')",Optimal
+ok_vqa,"('SDim', 'DiT')",Optimal
+textvqa_val,"('SDim', 'DiT')",Optimal
+seed_image,"('SDim', 'DiT')",Optimal
+ok_vqa,"('SDim', 'SD3')",Optimal
+textvqa_val,"('SDim', 'SD3')",Optimal
+seed_image,"('SDim', 'SD3')",Optimal
+ok_vqa,"('SDim', 'SD2.1')",Optimal
+textvqa_val,"('SDim', 'SD2.1')",Optimal
+seed_image,"('SDim', 'SD2.1')",Optimal
+vizwiz_vqa_val,"('SDim', 'CLIP224+DINOv2')",Optimal
+mme,"('SDim', 'CLIP336+DINOv2')",Optimal
+vizwiz_vqa_val,"('SDim', 'CLIP336+DINOv2')",Optimal
+scienceqa_img,"('SDim', 'CLIP336+DINOv2')",Optimal
+ok_vqa,"('SD1.5', 'DiT')",Optimal
+textvqa_val,"('SD1.5', 'DiT')",Optimal
+seed_image,"('SD1.5', 'DiT')",Optimal
+ok_vqa,"('SD1.5', 'SD3')",Optimal
+textvqa_val,"('SD1.5', 'SD3')",Optimal
+seed_image,"('SD1.5', 'SD3')",Optimal
+ok_vqa,"('SD1.5', 'SD2.1')",Optimal
+textvqa_val,"('SD1.5', 'SD2.1')",Optimal
+seed_image,"('SD1.5', 'SD2.1')",Optimal
+vizwiz_vqa_val,"('SD1.5', 'CLIP336+DINOv2')",Optimal
+scienceqa_img,"('SD1.5', 'CLIP336+DINOv2')",Optimal
+ok_vqa,"('SDXL', 'DiT')",Optimal
+textvqa_val,"('SDXL', 'DiT')",Optimal
+seed_image,"('SDXL', 'DiT')",Optimal
+ok_vqa,"('SDXL', 'SD3')",Optimal
+textvqa_val,"('SDXL', 'SD3')",Optimal
+seed_image,"('SDXL', 'SD3')",Optimal
+ok_vqa,"('SDXL', 'SD2.1')",Optimal
+textvqa_val,"('SDXL', 'SD2.1')",Optimal
+seed_image,"('SDXL', 'SD2.1')",Optimal
+ok_vqa,"('SDXL', 'CLIP224+DINOv2')",Optimal
+scienceqa_img,"('SDXL', 'CLIP224+DINOv2')",Optimal
+mmbench_en,"('SDXL', 'CLIP336+DINOv2')",Optimal
+ok_vqa,"('DiT', 'SD2.1')",Optimal
+vizwiz_vqa_val,"('DiT', 'SigLIP')",Optimal
+scienceqa_img,"('DiT', 'SigLIP')",Optimal
+ok_vqa,"('DiT', 'CLIP224+DINOv2')",Optimal
+textvqa_val,"('DiT', 'CLIP224+DINOv2')",Optimal
+seed_image,"('DiT', 'CLIP224+DINOv2')",Optimal
+mme,"('SD3', 'SigLIP')",Optimal
+scienceqa_img,"('SD3', 'SigLIP')",Optimal
+ok_vqa,"('SD3', 'CLIP224+DINOv2')",Optimal
+textvqa_val,"('SD3', 'CLIP224+DINOv2')",Optimal
+seed_image,"('SD3', 'CLIP224+DINOv2')",Optimal
+mmbench_en,"('SD3', 'CLIP336+DINOv2')",Optimal
+ok_vqa,"('SD2.1', 'CLIP224+DINOv2')",Optimal
+textvqa_val,"('SD2.1', 'CLIP224+DINOv2')",Optimal
+seed_image,"('SD2.1', 'CLIP224+DINOv2')",Optimal
+mmbench_en,"('SD2.1', 'CLIP336+DINOv2')",Optimal
+ok_vqa,"('SigLIP', 'CLIP224+DINOv2')",Optimal
+textvqa_val,"('SigLIP', 'CLIP224+DINOv2')",Optimal
+seed_image,"('SigLIP', 'CLIP224+DINOv2')",Optimal
+mmmu_val,"('CLIP336', 'DINOv2', 'SDXL', 'SigLIP')",Optimal
+mmmu_val,"('CLIP336', 'DINOv2', 'SDXL', 'CLIP224+DINOv2')",Optimal
+mmmu_val,"('CLIP336', 'DINOv2', 'DiT', 'SigLIP')",Optimal
+mmmu_val,"('CLIP336', 'DINOv2', 'SD3', 'SigLIP')",Optimal
+mmmu_val,"('CLIP336', 'DINOv2', 'SD2.1', 'SigLIP')",Optimal
+mmmu_val,"('CLIP336', 'DINOv2', 'SD2.1', 'CLIP224+DINOv2')",Optimal
+mmmu_val,"('CLIP336', 'DINOv2', 'SigLIP', 'CLIP224+DINOv2')",Optimal
+mmmu_val,"('CLIP336', 'SDim', 'DiT', 'SigLIP')",Optimal
+mmmu_val,"('CLIP336', 'SDim', 'SD3', 'SigLIP')",Optimal
+mmmu_val,"('CLIP336', 'SD1.5', 'DiT', 'SigLIP')",Optimal
+mmmu_val,"('CLIP336', 'SD1.5', 'SD3', 'SigLIP')",Optimal
+mmmu_val,"('CLIP336', 'SDXL', 'DiT', 'SigLIP')",Optimal
+mmmu_val,"('CLIP336', 'SDXL', 'SD3', 'SigLIP')",Optimal
+mmmu_val,"('CLIP336', 'SDXL', 'SD2.1', 'SigLIP')",Optimal
+mmmu_val,"('CLIP336', 'DiT', 'SigLIP', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('CLIP336', 'DiT', 'CLIP224+DINOv2', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('CLIP336', 'SD3', 'SigLIP', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('CLIP336', 'SD3', 'CLIP224+DINOv2', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('CLIP336', 'SD2.1', 'SigLIP', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('CLIP336', 'SD2.1', 'CLIP224+DINOv2', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('CLIP336', 'SigLIP', 'CLIP224+DINOv2', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('CLIP224', 'DiT', 'CLIP224+DINOv2', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('CLIP224', 'SD3', 'CLIP224+DINOv2', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('CLIP224', 'SD2.1', 'CLIP224+DINOv2', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('DINOv2', 'SDim', 'DiT', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('DINOv2', 'SDim', 'SD3', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('DINOv2', 'SDim', 'SD2.1', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('DINOv2', 'SDim', 'SigLIP', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('DINOv2', 'SD1.5', 'DiT', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('DINOv2', 'SD1.5', 'SD3', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('DINOv2', 'SD1.5', 'SD2.1', 'CLIP336+DINOv2')",Optimal
+mmmu_val,"('DINOv2', 'SD1.5', 'SigLIP', 'CLIP336+DINOv2')",Optimal
