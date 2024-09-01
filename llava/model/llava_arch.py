@@ -30,7 +30,6 @@ build_function_mapping = {'openai/clip-vit-large-patch14-336': build_vision_towe
                         'google/siglip-base-patch16-224': build_siglip_vision_tower, 
                         'laion/CLIP-ViT-L-14-laion2B-s32B-b82K': build_vision_tower,
                         'stabilityai/stable-diffusion-2-1': build_diffusion_vision_tower,
-                        'stabilityai/stable-diffusion-1-5': build_diffusion_vision_tower,
                         'runwayml/stable-diffusion-v1-5': build_diffusion_vision_tower,
                         'lambdalabs/sd-image-variations-diffusers': build_diffusion_vision_tower,
                         'facebook/dinov2-large': build_dinov2_vision_tower,

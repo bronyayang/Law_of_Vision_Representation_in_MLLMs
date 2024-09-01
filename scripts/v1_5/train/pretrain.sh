@@ -1,17 +1,17 @@
-deepspeed --master_port 25001 --num_nodes=1 --num_gpus=8 llava/train/train_mem.py \
-    --deepspeed /opt/tiger/LLaVA1.5/scripts/zero2.json \
-    --model_name_or_path /mnt/bn/bohanzhainas1/Public_Models/vicuna-7b-v1.5 \
+deepspeed --master_port 25001 --num_nodes=1 --num_gpus=8 llava/train/train.py \
+    --deepspeed ./scripts/zero2.json \
+    --model_name_or_path lmsys/vicuna-7b-v1.5 \
     --version plain \
-    --data_path /mnt/bn/bohanzhainas1/Public_data/blip_laion_cc_sbu_558k/blip_laion_cc_sbu_558k.json\
-    --image_folder /mnt/bn/bohanzhainas1/Public_data/llava_1.3_data/LLaVA-Pretrain/ \
-    --vision_tower openai/clip-vit-large-patch14-336,noise \
+    --data_path blip_laion_cc_sbu_558k.json \
+    --image_folder \
+    --vision_tower \
     --mm_projector_type mlp2x_gelu \
     --tune_mm_mlp_adapter True \
     --mm_vision_select_layer -2 \
     --mm_use_im_start_end False \
     --mm_use_im_patch_token False \
     --bf16 True \
-    --output_dir /mnt/bn/bohanzhainas1/shijiay/exp_ckpts/03-4-24_LLaVA_clipnoise_mof \
+    --output_dir \
     --num_train_epochs 1 \
     --per_device_train_batch_size 32 \
     --per_device_eval_batch_size 4 \
@@ -29,4 +29,4 @@ deepspeed --master_port 25001 --num_nodes=1 --num_gpus=8 llava/train/train_mem.p
     --model_max_length 2048 \
     --gradient_checkpointing True \
     --dataloader_num_workers 4 \
-    --lazy_preprocess True \
+    --lazy_preprocess True 
