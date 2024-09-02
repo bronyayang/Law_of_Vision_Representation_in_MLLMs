@@ -1,6 +1,6 @@
 # <img src="icon.png" alt="Icon" style="width:50px; height:50px;"> Law of Vision Representation in MLLMs
 
-[arXiv](https://arxiv.org/abs/2408.16357) / [HuggingFace](https://huggingface.co/papers/2408.16357)
+[arXiv](https://arxiv.org/abs/2408.16357) / [HuggingFace](https://huggingface.co/papers/2408.16357) / [Post on More Thoughts (English)](https://huggingface.co/blog/Borise/law-vision-representation-in-mllms) / [Post on More Thoughts (Chinese)](https://zhuanlan.zhihu.com/p/717297186)
 
 <div align="center">
   <img src="law_gif_fix.gif" alt="Visualization of the law" width="500"/>
