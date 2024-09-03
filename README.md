@@ -88,7 +88,6 @@ However, before running the command, ensure that you modify the following parame
 
 **Note:** To combine features from multiple vision towers, use a dot `.` between the names. For example: `openai/clip-vit-large-patch14.facebook/dinov2-large`
 
-Add . between names, such as "openai/clip-vit-large-patch14.facebook/dinov2-large" for feature combination.
 
 ### 3. Stage 2 Training
 **Prepare LLaVA Stage 2 Data:** Follow the instructions in [LLaVA's tutorial](https://github.com/haotian-liu/LLaVA/tree/main?tab=readme-ov-file#visual-instruction-tuning) to prepare the data for Stage 2 training.
@@ -97,7 +96,7 @@ Add . between names, such as "openai/clip-vit-large-patch14.facebook/dinov2-larg
 Use the following command to start training:
 
 ```Shell
-bash llava/scripts/v1_5/train/pretrain.sh
+bash llava/scripts/v1_5/train/finetune.sh
 ```
 
 However, before running the command, ensure that you modify the following parameters in the script:
@@ -160,7 +159,11 @@ To extract different vision representations across various benchmarks, refer to 
 
 ### A Score
 
+Under Reconstruction...
+
 ### C Score
+
+Under Reconstruction...
 
 ## Note
 
