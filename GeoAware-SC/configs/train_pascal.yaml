@@ -1,8 +1,0 @@
-NOTE: 'your_experiment_name'
-TRAIN_DATASET: pascal
-EVAL_DATASET: pascal
-DENSE_OBJ: 1
-TEST_SAMPLE: 0
-EPOCH: 100
-SOFT_EVAL: true
-LOAD: ./results_ap10k/pretrained_ckpt/last.PTH

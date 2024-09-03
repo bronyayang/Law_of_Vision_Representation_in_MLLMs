@@ -1,6 +1,0 @@
-NOTE: 'your_experiment_name'
-EVAL_DATASET: pascal
-DO_EVAL: true
-LOAD: "path/to/weight" # Path to the model checkpoint
-SOFT_EVAL: true
-TEST_SAMPLE: 0

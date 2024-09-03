@@ -473,21 +473,7 @@ class LlavaMetaForCausalLM(ABC):
             position_ids = None
 
         # print(cur_image_features.shape)
-        # print(self.model.embed_tokens)
-        # torch.save(cur_image_features.cpu(), "/mnt/bn/shijiaynas/cat.pt")
-        # torch.save(self.model.embed_tokens, "/mnt/bn/shijiaynas/clip_embed_layer.pt")
-        # temp_cur_image_features = cur_image_features.view(16, 16, 4096).permute(2, 0, 1)
-        # temp_cur_image_features = F.interpolate(temp_cur_image_features.unsqueeze(0).to(torch.float32), size=(24, 24), mode='bilinear', align_corners=False)
-        # temp_cur_image_features = temp_cur_image_features.squeeze(0).permute(1, 2, 0).view(-1, 4096)
-        # print(temp_cur_image_features.shape)
-
-        # temp_cur_image_features = cur_image_features.view(24, 24, 4096).permute(2, 0, 1)
-        # temp_cur_image_features = F.interpolate(temp_cur_image_features.unsqueeze(0).to(torch.float32), size=(16, 16), mode='bilinear', align_corners=False)
-        # temp_cur_image_features = temp_cur_image_features.squeeze(0).permute(1, 2, 0).view(-1, 4096)
-        # print(temp_cur_image_features.shape)
-
-        # save_tensor_to_folder(cur_image_features.cpu(), '/mnt/bn/shijiaynas/mmbench_tensors3/sd2.1')
-        # save_tensor_to_folder(cur_image_features.cpu(), '/mnt/bn/shijiaynas/temp_tensors')
+        # save_tensor_to_folder(cur_image_features.cpu(), '/any/path/temp_tensors')
 
         return None, position_ids, attention_mask, past_key_values, new_input_embeds, new_labels
 

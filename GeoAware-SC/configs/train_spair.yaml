@@ -1,9 +1,0 @@
-NOTE: 'your_experiment_name'
-DENSE_OBJ: 1
-PAIR_AUGMENT: true
-TEST_SAMPLE: 0
-EPOCH: 2
-SCHEDULER: "one_cycle"
-SOFT_EVAL: true
-COMPUTE_GEOAWARE_METRICS: true
-LOAD: "./results_ap10k/pretrained_ckpt/last.PTH"

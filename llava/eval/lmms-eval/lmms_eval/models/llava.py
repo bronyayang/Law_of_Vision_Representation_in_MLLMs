@@ -101,15 +101,14 @@ class Llava(lmms):
         model_name = model_name if model_name is not None else get_model_name_from_path(pretrained)
         try:
             # Try to load the model with the multimodal argument
-            # self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base="/mnt/bn/bohanzhainas1/Public_Models/vicuna-7b-v1.5", model_name=model_name, device_map=self.device_map, **llava_model_args)
             self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base=None, model_name=model_name, device_map=self.device_map, **llava_model_args)
+            # self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base="/mnt/bn/bohanzhainas1/Public_Models/vicuna-7b-v1.5", model_name=model_name, device_map=self.device_map, **llava_model_args)
         except TypeError:
             # for older versions of LLaVA that don't have multimodal and attn_implementation arguments
             llava_model_args.pop("multimodal", None)
             llava_model_args.pop("attn_implementation", None)
-            # self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base="/mnt/bn/bohanzhainas1/Public_Models/vicuna-7b-v1.5", model_name=model_name, device_map=self.device_map, **llava_model_args)
             self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base=None, model_name=model_name, device_map=self.device_map, **llava_model_args)
-
+            # self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base="/mnt/bn/bohanzhainas1/Public_Models/vicuna-7b-v1.5", model_name=model_name, device_map=self.device_map, **llava_model_args)
         self._config = self._model.config
         self.model.eval()
         self.model.tie_weights()
