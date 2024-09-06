@@ -19,8 +19,8 @@
 - [Train LLaVA with Custom Vision Representation](#train-llava-with-custom-vision-representation)
 - [Pretrained Weights](#pretrained-weights)
 - [Evaluations](#evaluations)
-- [AC Compute](#ac_compute)
-- [AC Fitting](ac_fitting)
+- [AC Compute](#ac-compute)
+- [AC Policy](#ac-policy)
 - [Note](#note)
 - [Citation](#citation)
 - [Acknowledgement](#acknowledgement)
@@ -36,8 +36,8 @@ cd Law_of_Vision_Representation_in_MLLMs
 ### 1. Install the LLaVA Environment: Ensure that the environment is compatible with your custom vision module
 
 ```Shell
-conda create -n ac python=3.10 -y
-conda activate ac
+conda create -n ac_llava python=3.10 -y
+conda activate ac_llava
 pip install --upgrade pip
 bash run.sh
 ```
@@ -157,11 +157,39 @@ To extract different vision representations across various benchmarks, refer to 
 
 ## AC Compute
 
+### 1. Install the Environment for Computing AC Score
+
+The environment setup is adapted from [Telling Left from Right](https://github.com/Junyi42/geoaware-sc). If you encounter any issues, refer to the original repository and their [issue tracker](https://github.com/Junyi42/GeoAware-SC/issues).
+
+```bash
+conda create -n ac_score python=3.9
+conda activate ac_score
+conda install pytorch=1.13.1 torchvision=0.14.1 pytorch-cuda=11.6 -c pytorch -c nvidia
+conda install -c "nvidia/label/cuda-11.6.1" libcusolver-dev
+cd C_score
+pip install -e .
+```
+
 ### A Score
+
+**Prepare Vision Embeddings:** Ensure that you have the vision embeddings for `CLIP@224`, `CLIP@336`, and your target vision embeddings stored in the path `/any/path/benchmark`. You can find more details on how to extract these embeddings [here](#3-visual-embedding-extraction-from-benchmark-data).
+
+**Change Base Folder and Target Vision Representation Settings:** Modify the `base_folder` variable on [line 7](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/A_score/compute.py#L7) in `A_score/compute.py` to point to the folder where you saved the vision embeddings. Also, update the `subfolders` variable to reflect the subfolder names that correspond to the vision representations for which you want to compute the A score.
+
+**Run the A Score Computation:**
+```bash
+cd A_score
+python3 compute.py
+```
+
+The A score will be printed to the console. Optionally, you can save the output to a CSV file for use in the AC policy section.
+
+### C Score
 
 Under Reconstruction...
 
-### C Score
+
+## AC Policy
 
 Under Reconstruction...
 
