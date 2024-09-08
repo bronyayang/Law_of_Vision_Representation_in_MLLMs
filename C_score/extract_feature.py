@@ -13,8 +13,8 @@ from llava.model.multimodal_encoder.dinov2_encoder import DinoV2VisionTower
 from llava.model.multimodal_encoder.siglip_encoder import SigLipVisionTower
 
 # Define the input and output paths
-input_path = '/opt/tiger/LLaVA1.5/GeoAware-SC/data/SPair-71k/JPEGImages'
-output_path = '/mnt/bn/shijiaynas/spair_feature/dino336'
+input_path = './data/SPair-71k/JPEGImages'
+output_path = './spair_feature/dino336'
 
 class args_c:
     def __init__(self):

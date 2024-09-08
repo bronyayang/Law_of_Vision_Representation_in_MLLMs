@@ -186,8 +186,33 @@ The A score will be printed to the console. Optionally, you can save the output 
 
 ### C Score
 
-Under Reconstruction...
+**Prepare Vision Features on SPair-71k:** First, download the SPair-71k dataset:
+```bash
+cd  C_score
+bash data/prepare_spair.sh
+```
+Next, modify the `input_path` and `output_path` variables starting at [line 16](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/C_score/extract_feature.py#L16) in `C_score/extract_feature.py`.
 
+- `input_path`: Set this to the location where you downloaded the SPair-71k dataset, typically `./data/SPair-71k/JPEGImage`s.
+- `output_path`: Set this to `./data/SPair-71k/features`, as `pck_train.py` expects features to be in a fixed path.
+
+Additionally, modify the `feature` variable at [line 23](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/C_score/extract_feature.py#L23) to specify the vision representation you want to extract.
+
+Run the following command to extract the features:
+```bash
+python extract_feature.py
+```
+
+**Run the C Score Computation:**
+Once the features are extracted, you can compute the C score with the following command:
+
+```bash
+python pck_train.py --config configs/eval_zero_shot_spair.yaml
+```
+
+The results will be logged.
+
+If you wish to run feature combination, use the `pck_train_two.py` script and the `configs/eval_zero_shot_spair_two.yaml` configuration file, which concatenates features along the channel dimension.
 
 ## AC Policy
 
