@@ -186,12 +186,12 @@ class OneStepSDPipeline(StableDiffusionImageVariationPipeline):
 
 class IMSDFeaturizer:
     def __init__(self, sd_id='lambdalabs/sd-image-variations-diffusers'):
-        unet = MyUNet2DConditionModel.from_pretrained(sd_id, subfolder="unet", torch_dtype=torch.bfloat16)
-        onestep_pipe = OneStepSDPipeline.from_pretrained(sd_id, unet=unet, safety_checker=None, torch_dtype=torch.bfloat16, low_cpu_mem_usage=False)
+        unet = MyUNet2DConditionModel.from_pretrained(sd_id, subfolder="unet")
+        onestep_pipe = OneStepSDPipeline.from_pretrained(sd_id, unet=unet.to(device="cuda", dtype=torch.bfloat16), safety_checker=None, low_cpu_mem_usage=False)
         onestep_pipe.vae.decoder = None
         onestep_pipe.scheduler = DDIMScheduler.from_pretrained(sd_id, subfolder="scheduler")
         gc.collect()
-        onestep_pipe = onestep_pipe.to("cuda")
+        onestep_pipe = onestep_pipe.to(device="cuda", dtype=torch.bfloat16)
         onestep_pipe.enable_attention_slicing()
         # onestep_pipe.enable_xformers_memory_efficient_attention()
         self.pipe = onestep_pipe

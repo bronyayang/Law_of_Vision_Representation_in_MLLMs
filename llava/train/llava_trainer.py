@@ -17,7 +17,7 @@ from typing import List, Optional
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
-from transformers.deepspeed import is_deepspeed_zero3_enabled
+from transformers.integrations.deepspeed import is_deepspeed_zero3_enabled
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -147,6 +147,14 @@ class LengthGroupedSampler(Sampler):
 
 
 class LLaVATrainer(Trainer):
+    # For A score calculation
+    # def get_train_dataloader(self):
+    #     return DataLoader(
+    #         self.train_dataset,
+    #         batch_size=self.args.train_batch_size,
+    #         collate_fn=self.data_collator,
+    #         shuffle=False  # Disable shuffling here
+    #     )
 
     def _get_train_sampler(self) -> Optional[torch.utils.data.Sampler]:
         if self.train_dataset is None or not has_length(self.train_dataset):
@@ -183,7 +191,7 @@ class LLaVATrainer(Trainer):
                 self.model.config.save_pretrained(output_dir)
                 torch.save(weight_to_save, os.path.join(output_dir, f'mm_projector.bin'))
         else:
-            super(LLaVATrainer, self)._save_checkpoint(model, trial, metrics)
+            super(LLaVATrainer, self)._save_checkpoint(model, trial)
 
     def _save(self, output_dir: Optional[str] = None, state_dict=None):
         if getattr(self.args, 'tune_mm_mlp_adapter', False):

@@ -14,13 +14,13 @@ from llava.model.multimodal_encoder.siglip_encoder import SigLipVisionTower
 
 # Define the input and output paths
 input_path = './data/SPair-71k/JPEGImages'
-output_path = './spair_feature/dino336'
+output_path = './spair_feature/siglipl'
 
 class args_c:
     def __init__(self):
         self.mm_vision_select_layer = -2
 
-feature = "DINOv2"
+feature = "SigLIP-L"
 if feature == "DIFT2.1":
     dift = SDFeaturizer(sd_id='stabilityai/stable-diffusion-2-1')
 if feature == "DIFT1.5":
@@ -45,6 +45,12 @@ elif feature == "DINOv2":
 elif feature == "SigLIP":
     args = args_c()
     dift = SigLipVisionTower(vision_tower='google/siglip-base-patch16-224', args=args).to(torch.bfloat16)
+elif feature == "SigLIP-L":
+    args = args_c()
+    dift = SigLipVisionTower(vision_tower='google/siglip-large-patch16-256', args=args).to(torch.bfloat16)
+elif feature == "SigLIP2":
+    args = args_c()
+    dift = SigLipVisionTower(vision_tower='google/siglip2-large-patch16-256', args=args).to(torch.bfloat16)
 
 dift.eval()
 dift.cuda()
@@ -60,6 +66,8 @@ def extract_features(image_path):
         img_size = 512
     elif feature == "DINOv2" or feature == "SigLIP":
         img_size = 224
+    elif feature == "SigLIP-L" or feature == "SigLIP2":
+        img_size = 256
     ensemble_size = 1
     prompt = ''
     img = Image.open(image_path).convert('RGB')
@@ -88,6 +96,11 @@ def extract_features(image_path):
     elif feature == "SigLIP":
         f = dift.forward(img_tensor.unsqueeze(0).to(torch.float32))
         f = f.permute(0,2,1).view(1, 768, 14, 14)
+        return f
+    elif feature == "SigLIP-L" or feature == "SigLIP2":
+        f = dift.forward(img_tensor.unsqueeze(0).to(torch.float32))
+        f = f.permute(0,2,1).view(1, -1, 16, 16)
+        print(f.shape)
         return f
     elif feature == "DiTDIFT":
         f = dift.forward(img_tensor.unsqueeze(0).to(torch.bfloat16),
@@ -122,7 +135,7 @@ def process_images(input_dir, output_dir):
                 features = extract_features(input_image_path)
 
                 # Construct the full output path and create directories if needed
-                output_image_path = os.path.join(output_dir, class_name, f'{image_name}_dino336.pt')
+                output_image_path = os.path.join(output_dir, class_name, f'{image_name}_siglipl256.pt')
                 os.makedirs(os.path.dirname(output_image_path), exist_ok=True)
 
                 # Save the features as a numpy file

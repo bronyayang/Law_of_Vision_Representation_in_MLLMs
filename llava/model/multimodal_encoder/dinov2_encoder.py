@@ -22,8 +22,8 @@ class DinoV2VisionTower(nn.Module):
 
     def load_model(self):
         self.image_processor = AutoImageProcessor.from_pretrained(self.vision_tower_name)
-        # setattr(self.image_processor, 'crop_size', {'width': 336, 'height': 336})
-        # setattr(self.image_processor, 'size', {'width': 336, 'height': 336})
+        setattr(self.image_processor, 'crop_size', {'width': 336, 'height': 336})
+        setattr(self.image_processor, 'size', {'width': 336, 'height': 336})
         self.vision_tower = AutoModel.from_pretrained(self.vision_tower_name, use_safetensors=False)
         self.vision_tower.requires_grad_(False)
 

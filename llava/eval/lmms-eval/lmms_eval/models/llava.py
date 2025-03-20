@@ -6,6 +6,8 @@ import logging
 import copy
 from tqdm import tqdm
 from datetime import timedelta
+import string
+
 
 from lmms_eval import utils
 from lmms_eval.api.instance import Instance
@@ -69,7 +71,7 @@ class Llava(lmms):
         model_name=None,
         attn_implementation=best_fit_attn_implementation,
         use_flash_attention_2=True,
-        device_map="auto",
+        device_map="",
         conv_template="vicuna_v1",
         use_cache=True,
         truncate_context=False,  # whether to truncate the context in generation, set it False for LLaVA-1.6
@@ -102,13 +104,13 @@ class Llava(lmms):
         try:
             # Try to load the model with the multimodal argument
             self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base=None, model_name=model_name, device_map=self.device_map, **llava_model_args)
-            # self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base="/mnt/bn/bohanzhainas1/Public_Models/vicuna-7b-v1.5", model_name=model_name, device_map=self.device_map, **llava_model_args)
+            # self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base="lmsys/vicuna-7b-v1.5", model_name=model_name, device_map=self.device_map, **llava_model_args)
         except TypeError:
             # for older versions of LLaVA that don't have multimodal and attn_implementation arguments
             llava_model_args.pop("multimodal", None)
             llava_model_args.pop("attn_implementation", None)
             self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base=None, model_name=model_name, device_map=self.device_map, **llava_model_args)
-            # self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base="/mnt/bn/bohanzhainas1/Public_Models/vicuna-7b-v1.5", model_name=model_name, device_map=self.device_map, **llava_model_args)
+            # self._tokenizer, self._model, self._image_processor, self._max_length = load_pretrained_model(model_path=pretrained, model_base="lmsys/vicuna-7b-v1.5", model_name=model_name, device_map=self.device_map, **llava_model_args)
         self._config = self._model.config
         self.model.eval()
         self.model.tie_weights()
@@ -268,6 +270,7 @@ class Llava(lmms):
             # Context part no need to calculate for loss
             labels[0, : contxt_id.shape[1]] = -100
             with torch.inference_mode():
+                image = image.to(self.model.dtype).unsqueeze(0)
                 outputs = self.model(input_ids=input_ids, labels=labels, images=image, use_cache=False)
             loss = outputs["loss"]
             # loss = torch.exp(loss)
@@ -287,6 +290,19 @@ class Llava(lmms):
             for j in i:
                 new_list.append(j)
         return new_list
+
+    
+    # def clean_text(self, text):
+    #     # Convert to lower case
+    #     text = text.lower()
+    #     # Remove punctuation
+    #     text = text.translate(str.maketrans('', '', string.punctuation))
+    #     # Strip leading and trailing whitespace
+    #     text = text.strip()
+    #     # Remove the word "assistant"
+    #     words = text.split()
+    #     words = [word for word in words if word != "assistant"]
+    #     return " ".join(words)
 
     def generate_until(self, requests: List[Instance]) -> List[str]:
         res = []
@@ -401,25 +417,31 @@ class Llava(lmms):
             attention_masks = input_ids.ne(pad_token_ids).to(self.device)
             # These steps are not in LLaVA's original code, but are necessary for generation to work
             # TODO: pay attention to this major generation step...
-            if type(image_tensor) is not list and image_tensor is not None:
+            if type(image_tensor) is not list and image_tensor is not None and image_tensor.shape[0] != 1:
                 image_tensor = image_tensor.unsqueeze(0)
             try:
                 # print(self.tokenizer.encode("cat"))
                 # print(self.tokenizer.decode([1, 6635]))
+                # print(image_tensor.shape)
                 cont = self.model.generate(
                     input_ids,
                     attention_mask=attention_masks,
                     pad_token_id=pad_token_ids,
                     images=image_tensor,
+                    tokenizer=self.tokenizer,
                     # image_sizes=gen_kwargs["image_sizes"],
                     do_sample=True if gen_kwargs["temperature"] > 0 else False,
                     temperature=gen_kwargs["temperature"],
                     top_p=gen_kwargs["top_p"],
                     num_beams=gen_kwargs["num_beams"],
-                    max_new_tokens=gen_kwargs["max_new_tokens"],
+                    max_new_tokens=100,
                     use_cache=self.use_cache,
+                    stop_strings=["\n"]
                 )
                 text_outputs = self.tokenizer.batch_decode(cont, skip_special_tokens=True)
+                # text_outputs = [self.clean_text(text) for text in text_outputs]
+                # print(text_outputs)
+
             except Exception as e:
                 eval_logger.error(f"Error {e} in generating")
                 cont = ""
@@ -437,6 +459,7 @@ class Llava(lmms):
             #             # ignore '' separator,
             #             # for seq2seq case where self.tok_decode(self.eot_token_id) = ''
             #             text_outputs = text_outputs.split(term)[0]
+            # print(text_outputs)
             res.extend(text_outputs)
             self.cache_hook.add_partial("generate_until", (context, gen_kwargs), text_outputs)
             pbar.update(1)

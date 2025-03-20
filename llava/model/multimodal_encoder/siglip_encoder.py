@@ -21,7 +21,7 @@ class SigLipVisionTower(nn.Module):
 
     def load_model(self):
         self.image_processor = AutoImageProcessor.from_pretrained(self.vision_tower_name)
-        setattr(self.image_processor, 'crop_size', {'width': 224, 'height': 224})
+        setattr(self.image_processor, 'crop_size', self.image_processor.size)
         self.vision_tower = AutoModel.from_pretrained(self.vision_tower_name).vision_model
         self.vision_tower.requires_grad_(False)
 
@@ -57,7 +57,7 @@ class SigLipVisionTower(nn.Module):
 
     @property
     def dtype(self):
-        return torch.float16
+        return torch.bfloat16
 
     @property
     def device(self):
@@ -72,7 +72,7 @@ class SigLipVisionTower(nn.Module):
 
     @property
     def hidden_size(self):
-        return 768
+        return self.config.hidden_size
 
     @property
     def num_patches(self):

@@ -68,6 +68,7 @@ class DiffVisionTower(nn.Module):
         if type(images) is list:
             image_features = []
             for image in images:
+                image = image.to(device=self.device, dtype=self.dtype)
                 image_feature = self.vision_tower.forward(image,
                                                           prompt=self.prompt,
                                                           t=self.t,
@@ -77,6 +78,7 @@ class DiffVisionTower(nn.Module):
         else:
             if len(images.shape) == 3:
                 images = torch.unsqueeze(images, dim=0)
+            images = images.to(device=self.device, dtype=self.dtype)
             image_features = self.vision_tower.forward(images,
                                             prompt=self.prompt,
                                             t=self.t,
@@ -96,11 +98,11 @@ class DiffVisionTower(nn.Module):
 
     @property
     def dtype(self):
-        return self.vision_tower.dtype
+        return torch.bfloat16
     
     @property
     def device(self):
-        return self.vision_tower.device
+        return "cuda"
 
     # @property
     # def config(self):
