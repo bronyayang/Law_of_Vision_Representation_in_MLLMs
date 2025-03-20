@@ -1,2 +1,2 @@
 from .language_model.llava_llama import LlavaLlamaForCausalLM, LlavaConfig
-from .language_model.llava_llama_switch import SwitchConfig, LlavaLlamaSwtichForCausalLM
+from .language_model.llava_qwen import LlavaQwen2ForCausalLM, LlavaQwenConfig

@@ -231,7 +231,7 @@ class SDFeaturizer:
         onestep_pipe.vae.decoder = None
         onestep_pipe.scheduler = DDIMScheduler.from_pretrained(sd_id, subfolder="scheduler")
         gc.collect()
-        onestep_pipe = onestep_pipe.to("cuda")
+        onestep_pipe = onestep_pipe.to(device="cuda", dtype=torch.bfloat16)
         onestep_pipe.enable_attention_slicing()
         # onestep_pipe.enable_xformers_memory_efficient_attention()
         self.pipe = onestep_pipe

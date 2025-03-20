@@ -13,11 +13,11 @@ def main():
 
     args = parser.parse_args()
 
-    df = pd.read_csv('/Users/shijiayang/Desktop/Vision_Feature_AC_private/visualizations/ablations_t.csv')
+    df = pd.read_csv('/code/users/shiyang/Law_of_Vision_Representation_in_MLLMs/policy/new_AC-ablations_t.csv')
 
     # Define the parameters
     benchmarks = ["mmbench_en", "mme", "mmmu_val", "ok_vqa", "textvqa_val", "vizwiz_vqa_val", "scienceqa_img", "seed_image"]
-    train_models = ["CLIP336", "CLIP224", "OpenCLIP", "DINOv2", "SDim", "SD1.5", "SDXL", "DiT", "SD3", "SD2.1", "SigLIP", "CLIP224+DINOv2", "CLIP336+DINOv2"]
+    train_models = ["CLIP336", "CLIP224", "OpenCLIP", "DINOv2", "SDim", "SD1.5", "SDXL", "DiT", "SD3", "SD2.1", "SigLIP_Base", "SigLIP_Large", "CLIP224+DINOv2", "CLIP336+DINOv2", "SigLIP2"]
 
     # Initialize a dictionary to store the results
     # results = {'Benchmarks': benchmarks}
@@ -32,17 +32,18 @@ def main():
     for benchmark in benchmarks:
         data_perf_max = df[benchmark].max()
         data_perf_min = df[benchmark].min()
-        data_a_max = df[f'{benchmark}_average'].max()
-        data_a_min = df[f'{benchmark}_average'].min()
-        data_c_max = df['corres'].max()
-        data_c_min = df['corres'].min()
+        data_a_max = df['A'].max()
+        data_a_min = df['A'].min()
+        data_c_max = df['C'].max()
+        data_c_min = df['C'].min()
 
-        df["normed_a"] = (df[f'{benchmark}_average'] - data_a_min) / (data_a_max - data_a_min)
-        df["normed_c"] = (df['corres'] - data_c_min) / (data_c_max - data_c_min)
+        df["normed_a"] = (df[f'A'] - data_a_min) / (data_a_max - data_a_min)
+        df["normed_c"] = (df['C'] - data_c_min) / (data_c_max - data_c_min)
 
         train_df = df[df['model'].isin(train_models)]
 
         normalized_train_y = (train_df[benchmark] - data_perf_min) / (data_perf_max - data_perf_min)
+
 
         if args.data == 'AC':
             normalized_train_X = train_df[['normed_a', 'normed_c']]
@@ -88,13 +89,13 @@ def main():
         print(benchmark, train_r2)
         results[f'{benchmark}_A'] = df["normed_a"].copy()
         results[f'{benchmark}_C'] = df["normed_c"].copy()
-        
+
 
     # Convert the results dictionary to a DataFrame
     results_df = pd.DataFrame(results)
 
     # Save the DataFrame to a CSV file
-    results_df.to_csv(f'/Users/shijiayang/Desktop/Vision_Feature_AC_private/visualizations/{args.file_name}.csv', index=False)
+    # results_df.to_csv(f'/Users/shijiayang/Desktop/Vision_Feature_AC_private/visualizations/{args.file_name}.csv', index=False)
 
 if __name__ == "__main__":
     main()

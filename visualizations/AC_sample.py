@@ -26,19 +26,21 @@ def AC_sample():
     # Create a dictionary to store points by region
     all_sampled = []
     level = 1
-    df = pd.read_csv('/Users/shijiayang/Desktop/Vision_Feature_AC_private/visualizations/AC_score.csv')
-    df = df.set_index('Models')
-    optimal = {"mmbench_en": "CLIP224+DINOv2", "mme": "CLIP336", "mmmu_val": "OpenCLIP", "ok_vqa": "CLIP336+DINOv2", "textvqa_val": "CLIP336+DINOv2", "vizwiz_vqa_val": "CLIP336", "scienceqa_img": "CLIP336", "seed_image": "CLIP336+DINOv2"}
+    df = pd.read_csv('/code/users/shiyang/Law_of_Vision_Representation_in_MLLMs/policy/new_AC-ablations_t.csv')
+    df = df.set_index('model')
+    # benchmarks = ["mmbench_en", "mme", "mmmu_val", "ok_vqa", "textvqa_val", "vizwiz_vqa_val", "scienceqa_img", "seed_image"]
+    # optimal = ["SigLIP2", "CLIP336", "OpenCLIP", "SigLIP2", "SigLIP2", "SigLIP2", "SigLIP_Large", "SigLIP2"]
+    optimal = {"mmbench_en": "SigLIP2", "mme": "CLIP336", "mmmu_val": "OpenCLIP", "ok_vqa": "SigLIP2", "textvqa_val": "SigLIP2", "vizwiz_vqa_val": "SigLIP2", "scienceqa_img": "SigLIP_Large", "seed_image": "SigLIP2"}
     benchmark = 'seed_image'
     pred_models = []
 
-    while len(all_sampled) < 13:
+    while len(all_sampled) < 15:
         regions = {}
         for model, rows in df.iterrows():
-            region_key = determine_region(rows[f'{benchmark}_A'], rows[f'{benchmark}_C'], level)
+            region_key = determine_region(rows['A'], rows['C'], level)
             if region_key not in regions:
                 regions[region_key] = []
-            regions[region_key].append((model, rows[f'{benchmark}_A'], rows[f'{benchmark}_C']))
+            regions[region_key].append((model, rows['A'], rows['C']))
 
         del_list = []
         for model in all_sampled:
@@ -68,20 +70,20 @@ def AC_sample():
             remaining_regions.remove(chosen_region)
 
         level += 1
-    return 13
+    return 15
 
 def random_sample():
     all_sampled = []
     benchmark = 'seed_image'
-    all_models = ["CLIP336", "CLIP224", "OpenCLIP", "DINOv2", "SDim", "SD1.5", "SDXL", "DiT", "SD3", "SD2.1", "SigLIP", "CLIP224+DINOv2", "CLIP336+DINOv2"]
-    optimal = {"mmbench_en": "CLIP224+DINOv2", "mme": "CLIP336", "mmmu_val": "OpenCLIP", "ok_vqa": "CLIP336+DINOv2", "textvqa_val": "CLIP336+DINOv2", "vizwiz_vqa_val": "CLIP336", "scienceqa_img": "CLIP336", "seed_image": "CLIP336+DINOv2"}
-    while len(all_sampled) < 13:
+    all_models = ["CLIP336", "CLIP224", "OpenCLIP", "DINOv2", "SDim", "SD1.5", "SDXL", "DiT", "SD3", "SD2.1", "SigLIP_Base", "SigLIP_Large", "CLIP224+DINOv2", "CLIP336+DINOv2", "SigLIP2"]
+    optimal = {"mmbench_en": "SigLIP2", "mme": "CLIP336", "mmmu_val": "OpenCLIP", "ok_vqa": "SigLIP2", "textvqa_val": "SigLIP2", "vizwiz_vqa_val": "SigLIP2", "scienceqa_img": "SigLIP_Large", "seed_image": "SigLIP2"}
+    while len(all_sampled) < 15:
         pred_model = all_models[np.random.choice(np.arange(len(all_models)))]
         all_sampled.append(pred_model)
         if pred_model == optimal[benchmark]:
             return len(all_sampled)
         all_models.remove(pred_model)
-    return 13
+    return 15
 
 num_trials = 1000  # You can adjust this number based on your needs
 results_random = [random_sample() for _ in tqdm(range(num_trials), desc='Simulating Trials')]
@@ -118,7 +120,7 @@ ax.spines['bottom'].set_visible(True)
 
 plt.xticks(range(1, max(results_random) + 1))
 # plt.legend()
-plt.show()
+plt.savefig('seed_image_ac_sample.png', dpi=300)
     # print(f"Run Failed for {benchmark}. Optimal cannot be predicted!")
     # print(all_sampled)
     # print(pred_models)

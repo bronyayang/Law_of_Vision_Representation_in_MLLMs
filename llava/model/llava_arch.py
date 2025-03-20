@@ -26,8 +26,8 @@ from llava.mm_utils import get_anyres_image_grid_shape
 
 from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
 
-build_function_mapping = {'openai/clip-vit-large-patch14-336': build_vision_tower, 
-                        'google/siglip-base-patch16-224': build_siglip_vision_tower, 
+build_function_mapping = {'openai/clip-vit-large-patch14-336': build_vision_tower,
+                        'google/siglip-base-patch16-224': build_siglip_vision_tower,
                         'laion/CLIP-ViT-L-14-laion2B-s32B-b82K': build_vision_tower,
                         'stabilityai/stable-diffusion-2-1': build_diffusion_vision_tower,
                         'runwayml/stable-diffusion-v1-5': build_diffusion_vision_tower,
@@ -37,7 +37,12 @@ build_function_mapping = {'openai/clip-vit-large-patch14-336': build_vision_towe
                         'feature': build_feature,
                         'facebook/DiT-XL-2-512': build_diffusion_vision_tower,
                         'stabilityai/stable-diffusion-3-medium-diffusers': build_diffusion_vision_tower,
-                        'openai/clip-vit-large-patch14': build_vision_tower}
+                        'openai/clip-vit-large-patch14': build_vision_tower,
+                        'google/siglip2-base-patch16-224': build_siglip_vision_tower,
+                        'google/siglip2-large-patch16-256': build_siglip_vision_tower,
+                        'google/siglip-large-patch16-384': build_siglip_vision_tower,
+                        'google/siglip-large-patch16-256': build_siglip_vision_tower
+                        }
 
 feature_hid_size_mapping = {'runwayml/stable-diffusion-v1-5_feature': 1280}
 
@@ -47,7 +52,7 @@ class LlavaMetaModel:
         super(LlavaMetaModel, self).__init__(config)
 
         if hasattr(config, "mm_vision_tower"):
-            if ',' not in config.mm_vision_tower and '.' not in config.mm_vision_tower:
+            if ',' not in config.mm_vision_tower and ';' not in config.mm_vision_tower:
                 if 'feature' in config.mm_vision_tower:
                     self.vision_tower = build_function_mapping['feature'](config)
                 else:
@@ -70,7 +75,7 @@ class LlavaMetaModel:
             else:
                 # feature fuse
                 ori_mm_vision_tower = config.mm_vision_tower
-                vision_tower_name_split = config.mm_vision_tower.split('.')
+                vision_tower_name_split = config.mm_vision_tower.split(';')
                 list_vision_towers = nn.ModuleList([])
                 for v in vision_tower_name_split:
                     config.mm_vision_tower = v
@@ -111,7 +116,7 @@ class LlavaMetaModel:
         mm_vision_select_feature = model_args.mm_vision_select_feature
         pretrain_mm_mlp_adapter = model_args.pretrain_mm_mlp_adapter
 
-        if ',' not in vision_tower_name and '.' not in vision_tower_name:
+        if ',' not in vision_tower_name and ';' not in vision_tower_name:
             self.config.mm_vision_tower = vision_tower_name
             if 'feature' in vision_tower_name:
                 vision_tower = build_function_mapping['feature'](model_args)
@@ -132,7 +137,7 @@ class LlavaMetaModel:
             self.config.mm_vision_tower = vision_tower_name
             model_args.vision_tower = vision_tower_name
         else:
-            vision_tower_name_split = vision_tower_name.split('.')
+            vision_tower_name_split = vision_tower_name.split(';')
             list_vision_towers = nn.ModuleList([])
             for v in vision_tower_name_split:
                 if v == 'noise':
@@ -155,13 +160,13 @@ class LlavaMetaModel:
         self.config.mm_vision_select_layer = mm_vision_select_layer
         self.config.mm_vision_select_feature = mm_vision_select_feature
 
-        if ',' not in vision_tower_name and '.' not in vision_tower_name:
+        if ',' not in vision_tower_name and ';' not in vision_tower_name:
             if 'feature' not in vision_tower_name:
                 self.config.mm_hidden_size = vision_tower.hidden_size
             else:
                 self.config.mm_hidden_size = feature_hid_size_mapping[vision_tower_name]
             self.mm_projector = build_vision_projector(self.config)
-        elif '.' in vision_tower_name:
+        elif ';' in vision_tower_name:
             self.config.mm_hidden_size = 0
             for v in vision_tower:
                 self.config.mm_hidden_size += v.hidden_size
@@ -230,7 +235,7 @@ def save_tensor_to_folder(tensor, folder_path, max_tensors=100):
     # Check if the folder exists, if not, create it
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
-    
+
     # Count the number of tensor files in the folder
     tensor_files = [f for f in os.listdir(folder_path) if f.endswith('.pt')]
     tensor_count = len(tensor_files)

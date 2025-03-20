@@ -6,14 +6,14 @@ from sklearn.metrics import mean_squared_error
 import numpy as np
 
 # Load the data
-df = pd.read_csv('/Users/shijiayang/Desktop/Vision_Feature_AC_private/visualizations/ablations_t.csv')
+df = pd.read_csv('/code/users/shiyang/Law_of_Vision_Representation_in_MLLMs/policy/new_AC-ablations_t.csv')
 
 # Define the parameters
 benchmarks = ["mmbench_en", "mme", "mmmu_val", "ok_vqa", "textvqa_val", "vizwiz_vqa_val", "scienceqa_img", "seed_image"]
-optimal = ["CLIP224+DINOv2", "CLIP336", "OpenCLIP", "CLIP336+DINOv2", "CLIP336+DINOv2", "CLIP336", "CLIP336", "CLIP336+DINOv2"]
+optimal = ["SigLIP2", "CLIP336", "OpenCLIP", "SigLIP2", "SigLIP2", "SigLIP2", "SigLIP_Large", "SigLIP2"]
 
 # Define the possible models
-all_models = ["CLIP336", "CLIP224", "OpenCLIP", "DINOv2", "SDim", "SD1.5", "SDXL", "DiT", "SD3", "SD2.1", "SigLIP", "CLIP224+DINOv2", "CLIP336+DINOv2"]
+all_models = ["CLIP336", "CLIP224", "OpenCLIP", "DINOv2", "SDim", "SD1.5", "SDXL", "DiT", "SD3", "SD2.1", "SigLIP_Base", "SigLIP_Large", "CLIP224+DINOv2", "CLIP336+DINOv2", "SigLIP2"]
 
 found_optimal = [float("inf") for _ in range(8)]
 length_optimal = [float("inf") for _ in range(8)]
@@ -25,11 +25,11 @@ for train_model_count in range(2, len(all_models) + 1):
     for train_models in itertools.combinations(all_models, train_model_count):
         train_models_set = set(train_models)
         test_models = [model for model in all_models if model not in train_models_set]
-        
+
         for i, benchmark in enumerate(benchmarks):
             # if optimal[i] in train_models:
             #     continue
-            
+
             # if length_optimal[i] + 1 < train_model_count and found_optimal[i] == 0:
             #     continue
 
@@ -81,7 +81,7 @@ results_df.to_csv('benchmark_train_model_performance_all.csv', index=False)
 
     #         test_mse = mean_squared_error(normalized_test_y, test_pred)
     #         transformed_mse = 1/test_mse if test_mse > 0 else float('inf')
-            
+
     #         average_normed_a.append(train_df['normed_a'].to_numpy())
     #         averaged_mse.append(transformed_mse)
     #     average_normed_a = np.array(average_normed_a)
@@ -96,11 +96,11 @@ results_df.to_csv('benchmark_train_model_performance_all.csv', index=False)
     #             np.append(normed_a_mse_dict[i][normed_a],r2)
     #         else:
     #             normed_a_mse_dict[i][normed_a] = np.array(r2)
-                
+
     # for i in range(train_model_count):
     #     for k, v in normed_a_mse_dict[i].items():
     #         normed_a_mse_dict[i][k] = np.mean(v)
-                
+
     # plt.figure(figsize=(10, 6))
     # plt.xlabel('normed_a')
     # plt.ylabel('test_r2')
@@ -120,7 +120,7 @@ results_df.to_csv('benchmark_train_model_performance_all.csv', index=False)
     #     f_interp = interp1d(unique_normed_a, averaged_r2_scores, kind='cubic', fill_value="extrapolate")
     #     X_ = np.linspace(unique_normed_a.min(), unique_normed_a.max(), 2000)
     #     Y_ = f_interp(X_)
-        
+
     #         # Set y-values to zero where there are no data points
     #     mask = np.ones_like(X_, dtype=bool)
     #     for x_val in unique_normed_a:

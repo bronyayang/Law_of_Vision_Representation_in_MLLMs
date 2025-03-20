@@ -10,6 +10,8 @@ class SeparatorStyle(Enum):
     MPT = auto()
     PLAIN = auto()
     LLAMA_2 = auto()
+    QWEN_2 = auto()
+    CHATML = auto()
 
 
 @dataclasses.dataclass
@@ -67,6 +69,27 @@ class Conversation:
                     ret += role + message + self.sep
                 else:
                     ret += role
+        elif self.sep_style == SeparatorStyle.QWEN_2:  # fix: add qwen2
+            seps = [self.sep, self.sep2]
+            ret = self.system + seps[0]
+            for i, (role, message) in enumerate(messages):
+                if message:
+                    if type(message) is tuple:
+                        message, _, _ = message
+                    ret += role + ": " + message + seps[i % 2]
+                else:
+                    ret += role + ":"
+        elif self.sep_style == SeparatorStyle.CHATML:
+            ret = "" if self.system == "" else self.system + self.sep + "\n"
+            for role, message in messages:
+                if message:
+                    if type(message) is tuple:
+                        message, images, _ = message
+                        message = "<image>" * len(images) + message
+                    ret += role + "\n" + message + self.sep + "\n"
+                else:
+                    ret += role + "\n"
+            return ret
         elif self.sep_style == SeparatorStyle.LLAMA_2:
             wrap_sys = lambda msg: f"<<SYS>>\n{msg}\n<</SYS>>\n\n"
             wrap_inst = lambda msg: f"[INST] {msg} [/INST]"
@@ -368,6 +391,17 @@ conv_llava_v1_mmtag = Conversation(
     version="v1_mmtag",
 )
 
+conv_qwen_2 = Conversation(
+    system="""<|im_start|>system
+You are a helpful assistant.""",
+    roles=("<|im_start|>user", "<|im_start|>assistant"),
+    version="qwen",
+    messages=[],
+    offset=0,
+    sep_style=SeparatorStyle.CHATML,
+    sep="<|im_end|>",
+)
+
 default_conversation = conv_vicuna_v0
 conv_templates = {
     "default": conv_vicuna_v0,
@@ -376,7 +410,7 @@ conv_templates = {
     "vicuna_v1": conv_vicuna_v1,
     "llama_2": conv_llama_2,
     "chatml_direct": conv_chatml_direct,
-
+    "qwen_2": conv_qwen_2,
     "plain": conv_llava_plain,
     "v0_plain": conv_llava_plain,
     "llava_v0": conv_llava_v0,
