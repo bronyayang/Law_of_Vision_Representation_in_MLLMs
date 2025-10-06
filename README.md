@@ -10,7 +10,7 @@
 
 
 ## Updates
-- [TODO] Hard working on cleaning the code...but the messy version is here. Please stay tuned and star our repo! 😝
+- [2025/10/06] 🎉 Accepted by COLM 2025! Updated A score calculation with improved implementation.
 - [2024/09/01] We released the checkpoints of MLLMs on 13 vision representations.
 - [2024/08/29] We introduce the Law of Vision Representation in MLLMs and AC Policy.
 
@@ -132,29 +132,6 @@ accelerate launch --num_processes=8 -m lmms_eval --model llava   --model_args pr
 For more information, refer to the [original `lmms-eval` repository](https://github.com/EvolvingLMMs-Lab/lmms-eval) or the [README](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/llava/eval/lmms-eval/README.md) in this repository.
 
 
-### 3. Visual Embedding Extraction from Benchmark Data
-
-Our A score calculation requires visual embeddings extracted from benchmark data. This process also requires the stage 1 checkpoint to be loaded. The following method is suggested as a starting point and is not intended to encourage hardcoding:
-
-**1. Set the Random Seed:** Uncomment the code in [lmms-eval/lmms_eval/models
-/llava.py, lines 38-51](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/llava/eval/lmms-eval/lmms_eval/models/llava.py#L38-L51)
-
-**2. Enable Stage 1 Loading:** Uncomment [lines 105](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/llava/eval/lmms-eval/lmms_eval/models/llava.py#L105) and [lines 111](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/llava/eval/lmms-eval/lmms_eval/models/llava.py#L111) in `lmms-eval/lmms_eval/models/llava.py`.
-
-**3. Save the Visual Embeddings:** Uncomment [lines 476](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/llava/model/llava_arch.py#L476) in `llava/model/llava_arch.py`.
-- **Saving Path Format:** The path format for saving embeddings should be `/any/path/benchmark/vision_rep`. For example, `/Law_of_Vision_Representation_in_MLLMs/mmbench/clip336`.
-- **Shape:** The shape of the saved embeddings should be `[sequence_len, hidden_dim]`.
-
-**4. Run the Eval Command:**
-
-Once everything is set up, run the evaluation command:
-
-```bash
-accelerate launch --num_processes=8 -m lmms_eval --model llava   --model_args pretrained="path-to-stage-1-checkpoint"   --tasks task1 --batch_size 1 --log_samples --log_samples_suffix llava_custom_task1 --output_path ./logs/
-```
-
-To extract different vision representations across various benchmarks, refer to this [script](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/llava/eval/lmms-eval/run_embed_extract.sh).
-
 ## AC Compute
 
 ### 1. Install the Environment for Computing AC Score
@@ -172,36 +149,41 @@ pip install -e .
 
 ### A Score
 
-**Prepare Vision Embeddings:** Ensure that you have the vision embeddings for `CLIP@224`, `CLIP@336`, and your target vision embeddings stored in the path `/any/path/benchmark`. You can find more details on how to extract these embeddings [here](#3-visual-embedding-extraction-from-benchmark-data).
+The A score measures the average negative log-likelihood of data passed through the vision encoder, trained projector, and LLM. It evaluates how well vision features align with the LLM after Stage 1 training.
 
-**Change Base Folder and Target Vision Representation Settings:** Modify the `base_folder` variable on [line 7](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/A_score/compute.py#L7) in `A_score/compute.py` to point to the folder where you saved the vision embeddings. Also, update the `subfolders` variable to reflect the subfolder names that correspond to the vision representations for which you want to compute the A score.
+**Compute A Score:** Add the `--a_score` flag to your stage 1 training command with pretrained projector loaded:
 
-**Run the A Score Computation:**
 ```bash
-cd A_score
-python3 compute.py
+bash A_score/compute.sh
 ```
 
-The A score will be printed to the console. Optionally, you can save the output to a CSV file for use in the AC policy section.
+Before running, modify the following parameters in `A_score/compute.sh`:
+- `--vision_tower`
+- `--pretrain_mm_mlp_adapter` (checkpoint from Stage 1)
+- `--image_folder`
+
+The A score will be computed over 100 datapoints without model updates or data shuffling, then printed automatically before training stops.
 
 ### C Score
 
 **Prepare Vision Features on SPair-71k:** First, download the SPair-71k dataset:
 ```bash
-cd  C_score
+cd C_score
 bash data/prepare_spair.sh
 ```
-Next, modify the `input_path` and `output_path` variables starting at [line 16](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/C_score/extract_feature.py#L16) in `C_score/extract_feature.py`.
 
-- `input_path`: Set this to the location where you downloaded the SPair-71k dataset, typically `./data/SPair-71k/JPEGImage`s.
-- `output_path`: Set this to `./data/SPair-71k/features`, as `pck_train.py` expects features to be in a fixed path.
-
-Additionally, modify the `feature` variable at [line 23](https://github.com/bronyayang/Law_of_Vision_Representation_in_MLLMs/blob/master/C_score/extract_feature.py#L23) to specify the vision representation you want to extract.
-
-Run the following command to extract the features:
+Extract features using command-line arguments:
 ```bash
-python extract_feature.py
+python extract_feature.py \
+    --input_path ./data/SPair-71k/JPEGImages \
+    --output_path ./data/SPair-71k/features \
+    --feature DINOv2
 ```
+
+**Arguments:**
+- `--input_path`: Path to the SPair-71k dataset images (e.g., `./data/SPair-71k/JPEGImages`)
+- `--output_path`: Path to save extracted features. **Note:** `pck_train.py` expects features to be stored in a directory that mirrors the input path structure with `JPEGImages` replaced by `features` (e.g., if images are in `./data/SPair-71k/JPEGImages`, features should be in `./data/SPair-71k/features`)
+- `--feature`: Vision representation to extract. Options: `DIFT1.5`, `DIFT2.1`, `DIFTXL`, `IMDIFT`, `DiTDIFT`, `SD3DIFT`, `CLIP`, `OPENCLIP`, `DINOv2`, `SigLIP`
 
 **Run the C Score Computation:**
 Once the features are extracted, you can compute the C score with the following command:

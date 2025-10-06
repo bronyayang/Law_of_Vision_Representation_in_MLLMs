@@ -28,6 +28,7 @@ import torch.nn as nn
 
 import transformers
 import tokenizers
+from transformers import TrainerCallback
 
 from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
 from torch.utils.data import Dataset
@@ -46,6 +47,37 @@ local_rank = None
 def rank0_print(*args):
     if local_rank == 0:
         print(*args)
+
+
+class AScoreCallback(TrainerCallback):
+    """Callback to compute A-score (negative average loss over 100 datapoints) and stop training."""
+    
+    def __init__(self):
+        self.losses = []
+        self.a_score_computed = False
+
+    def on_log(self, args, state, control, logs=None, **kwargs):
+        # Check if the log contains a loss value
+        if logs is not None and "loss" in logs and not self.a_score_computed:
+            self.losses.append(logs["loss"])
+            
+            # When we've collected 100 loss values, calculate the negative average and print it.
+            if len(self.losses) == 100:
+                avg_loss = sum(self.losses) / len(self.losses)
+                a_score = -avg_loss
+                rank0_print(f"\n{'='*60}")
+                rank0_print(f"A-Score Computation Complete")
+                rank0_print(f"{'='*60}")
+                rank0_print(f"Average loss over 100 datapoints: {avg_loss:.6f}")
+                rank0_print(f"A-Score (negative average loss): {a_score:.6f}")
+                rank0_print(f"{'='*60}\n")
+                
+                self.a_score_computed = True
+                # Stop training
+                control.should_training_stop = True
+        
+        return control
+
 
 os_path={
         "coco/train2017": "/mnt/bn/bohanzhainas1/Public_data/mscoco_karpathy/train2017",
@@ -131,6 +163,10 @@ class TrainingArguments(transformers.TrainingArguments):
     lora_weight_path: str = ""
     lora_bias: str = "none"
     group_by_modality_length: bool = field(default=False)
+    a_score: bool = field(
+        default=False,
+        metadata={"help": "Compute A-score (negative average loss over 100 datapoints) without model updates or data shuffling."}
+    )
 
 
 def maybe_zero_3(param, ignore_status=False, name=None):
@@ -1106,9 +1142,24 @@ def train():
         data_module = make_feature_data_module(tokenizer=tokenizer,
                                                 data_args=data_args)
 
+    # Handle a_score mode
+    if training_args.a_score:
+        rank0_print("="*60)
+        rank0_print("A-Score mode enabled")
+        rank0_print("- Model parameters will NOT be updated")
+        rank0_print("- Data will NOT be shuffled (sequential order)")
+        rank0_print("- Training will stop after computing loss for 100 datapoints")
+        rank0_print("="*60)
+        
+    # Prepare callbacks
+    callbacks = []
+    if training_args.a_score:
+        callbacks.append(AScoreCallback())
+    
     trainer = LLaVATrainer(model=model,
                     tokenizer=tokenizer,
                     args=training_args,
+                    callbacks=callbacks if callbacks else None,
                     **data_module)
 
     if list(pathlib.Path(training_args.output_dir).glob("checkpoint-*")):

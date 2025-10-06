@@ -152,6 +152,11 @@ class LLaVATrainer(Trainer):
         if self.train_dataset is None or not has_length(self.train_dataset):
             return None
 
+        # If a_score mode is enabled, use SequentialSampler (no shuffling)
+        if getattr(self.args, 'a_score', False):
+            from torch.utils.data import SequentialSampler
+            return SequentialSampler(self.train_dataset)
+
         if self.args.group_by_modality_length:
             lengths = self.train_dataset.modality_lengths
             return LengthGroupedSampler(
@@ -163,6 +168,19 @@ class LLaVATrainer(Trainer):
             )
         else:
             return super()._get_train_sampler()
+
+    def training_step(self, model, inputs):
+        """
+        Override training_step to prevent optimizer updates when in a_score mode.
+        In a_score mode, we only compute loss for evaluation without updating parameters.
+        """
+        if getattr(self.args, 'a_score', False):
+            model.eval()
+            with torch.no_grad():
+                loss = self.compute_loss(model, inputs, return_outputs=False)
+            return loss.detach()
+        else:
+            return super().training_step(model, inputs)
 
     def _save_checkpoint(self, model, trial, metrics=None):
         if getattr(self.args, 'tune_mm_mlp_adapter', False):
